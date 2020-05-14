@@ -5,6 +5,10 @@
  */
 package Spesa;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -19,9 +23,18 @@ import javax.ws.rs.core.MediaType;
  *
  * @author franc_000
  */
+@ApplicationPath("/")
 @Path("spesa")
 public class Api {
 
+    final private String driver = "com.mysql.jdbc.Driver";
+    final private String dbms_url = "jdbc:mysql://localhost/";
+    final private String database = "db_spesa";
+    final private String user = "root";
+    final private String password = "";
+    private Connection spesaDatabase;
+    private boolean connected;
+    
     @Context
     private UriInfo context;
 
@@ -29,13 +42,37 @@ public class Api {
      * Creates a new instance of Api
      */
     public Api() {
+        super();
     }
+    
+    public void init(){
+        String url = dbms_url + database;
+        try {
+            Class.forName(driver);
+            spesaDatabase = DriverManager.getConnection(url, user, password);
+            connected = true;
+        } catch (SQLException e) {
+            connected = false;
+        } catch (ClassNotFoundException e) {
+            connected = false;
+        }
+    }
+    
+    public void destroy() {
+        try {
+            spesaDatabase.close();
+        } catch (SQLException e) {
+        }
+    }
+    
+    
 
     /**
      * Retrieves representation of an instance of Spesa.Api
      * @return an instance of java.lang.String
      */
     @GET
+    @Path("utente")
     @Produces(MediaType.APPLICATION_XML)
     public String getXml() {
         //TODO return proper representation object
