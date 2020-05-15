@@ -34,6 +34,7 @@ public class MyParser {
         element = (Element) nodelist.item(0);
         if (nodelist != null) {
             element = (Element) nodelist.item(0);
+            element.getNextSibling();
             utente = getUtente(element);
             utentet = utente;
 
