@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xs:complexType name="tipoUtente">
-		<xs:element name="username" type="xs:string"/>
-		<xs:element name="nome" type="xs:string"/>
-		<xs:element name="cognome" type="xs:string"/>
-		<xs:element name="password" type="xs:string"/>
-		<xs:element name="codiceFiscale" type="xs:string"/>
-		<xs:element name="regione" type="xs:string"/>
-		<xs:element name="via" type="xs:string"/>
-		<xs:element name="nCivico" type="xs:string"/>
+		<xs:sequence>
+			<xs:element name="username" type="xs:string"/>
+			<xs:element name="nome" type="xs:string"/>
+			<xs:element name="cognome" type="xs:string"/>
+			<xs:element name="password" type="xs:string"/>
+			<xs:element name="codiceFiscale" type="xs:string"/>
+			<xs:element name="regione" type="xs:string"/>
+			<xs:element name="via" type="xs:string"/>
+			<xs:element name="nCivico" type="xs:string"/>
+		</xs:sequence>
 	</xs:complexType>
 	
 	<xs:element name="utente" type="tipoUtente"/>

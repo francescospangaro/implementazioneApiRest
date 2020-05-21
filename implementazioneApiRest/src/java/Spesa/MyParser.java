@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.util.*;
 import javax.xml.parsers.*;
 import Spesa.Utente;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -11,9 +16,11 @@ public class MyParser {
 
     boolean controllo = false;
     private Utente utentet;
+    private Richiesta richiestat;
 
     public MyParser() {
         Utente utentet = new Utente();
+        Richiesta richiestat = new Richiesta();
     }
 
     public Utente parseUtente(String filename) throws ParserConfigurationException, SAXException, IOException {
@@ -32,20 +39,39 @@ public class MyParser {
         root = document.getDocumentElement();
         nodelist = root.getElementsByTagName("utente");
         element = (Element) nodelist.item(0);
-        if (nodelist != null) {
-            element = (Element) nodelist.item(0);
-            element.getNextSibling();
-            utente = getUtente(element);
-            utentet = utente;
+        utente = getUtente(element);
+        utentet = utente;
 
-        }
         return utentet;
+    }
+
+    public Richiesta parseRichiesta(String filename) throws ParserConfigurationException, SAXException, IOException {
+
+        DocumentBuilderFactory factory;
+        DocumentBuilder builder;
+        Document document;
+        Element root, element;
+        NodeList nodelist;
+        Richiesta richiesta;
+
+        // creazione dell’albero DOM dal documento XML
+        factory = DocumentBuilderFactory.newInstance();
+        builder = factory.newDocumentBuilder();
+        document = builder.parse(filename);
+        root = document.getDocumentElement();
+        nodelist = root.getElementsByTagName("richiesta");
+        element = (Element) nodelist.item(0);
+        element.getNextSibling();
+        richiesta = getRichiesta(element);
+        richiestat = richiesta;
+
+        return richiestat;
     }
 
     private Utente getUtente(Element elementUtente) {
         Utente utente;
         utente = new Utente();
-        
+
         String username = getTextValue(elementUtente, "username");
         utente.setUser(username);
 
@@ -70,6 +96,25 @@ public class MyParser {
         String nCivico = getTextValue(elementUtente, "nCivico");
         utente.setnCivico(nCivico);
         return utente;
+    }
+
+    private Richiesta getRichiesta(Element elementUtente) {
+        Richiesta richiesta;
+        richiesta = new Richiesta();
+
+        int rifUtente = getIntValue(elementUtente, "rifUtente");
+        richiesta.setRifUtente(rifUtente);
+
+        String oraInizio = getTextValue(elementUtente, "oraInizio");
+        richiesta.setOraInizio(oraInizio);
+
+        String oraFine = getTextValue(elementUtente, "oraFine");
+        richiesta.setOraFine(oraFine);
+
+        String durata = getTextValue(elementUtente, "durata");
+        richiesta.setDurata(durata);
+
+        return richiesta;
     }
 
     // restituisce il valore testuale dell’elemento figlio specificato
@@ -103,6 +148,19 @@ public class MyParser {
     // restituisce il valore numerico dell’elemento figlio specificato
     private float getFloatValue(Element element, String tag) {
         return Float.parseFloat(getTextValue(element, tag));
+    }
+
+    //restituisce il valore temporale dell'elemento figlio specificato
+    private java.sql.Time getTimeValue(Element element, String tag) {
+        String stringa = getTextValue(element, tag);
+        DateFormat formato = new SimpleDateFormat("HH:mm:ss");
+        java.sql.Time ora = null;
+        try {
+            ora = new java.sql.Time(formato.parse(stringa).getTime());
+        } catch (ParseException ex) {
+            Logger.getLogger(MyParser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ora;
     }
 
 }
