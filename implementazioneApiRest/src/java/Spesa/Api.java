@@ -424,6 +424,7 @@ public class Api {
     public String postUtenteXML(String content) {
         init();
         try {
+            String xsdFile = "\\xml\\utente.xsd";
             BufferedWriter writer;
             writer = new BufferedWriter(new FileWriter("entry.xml"));
             writer.write(content);

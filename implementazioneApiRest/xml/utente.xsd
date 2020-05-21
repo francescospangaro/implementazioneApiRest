@@ -13,5 +13,12 @@
 		</xs:sequence>
 	</xs:complexType>
 	
-	<xs:element name="utente" type="tipoUtente"/>
+	<xs:complexType name="tipoInserimento">
+		<xs:sequence>
+			<xs:element name="utente" type="tipoUtente"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:element name="inserisci" type="tipoInserimento"/>
+	
 </xs:schema>

@@ -9,5 +9,11 @@
 		<xs:sequence>
 	</xs:complexType>
 	
-	<xs:element name="richiesta" type="tipoRichiesta"/>
+	<xs:complexType name="tipoInserimento">
+		<xs:sequence>
+			<xs:element name="richiesta" type="tipoRichiesta"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:element name="inserisci" type="tipoInserimento"/>
 </xs:schema>
