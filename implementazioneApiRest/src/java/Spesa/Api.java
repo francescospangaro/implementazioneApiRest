@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.*;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javax.ws.rs.ApplicationPath;
@@ -83,19 +84,7 @@ public class Api {
     }
     
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("ue")
-    public String getMessage() {
-        return "ciao";
-    }
-
-    /**
-     * Retrieves representation of an instance of Spesa.Api
-     *
-     * @return an instance of java.lang.String
-     */
-    @GET
-    @Path("utente/{username}")
+    @Path("utenteXML/{username}")
     @Produces(MediaType.TEXT_XML)
     public String getUtenteDaUsername(@PathParam("username") String user) {
         init();
@@ -155,9 +144,9 @@ public class Api {
      * @param content representation for the resource
      */
     @POST
-    @Path("utente")
+    @Path("utenteXML")
     @Consumes(MediaType.TEXT_XML)
-    public String postUtente(String content) {
+    public String postUtenteXML(String content) {
         init();
         try {
             String xsdFile = "..\\xml\\utente.xsd";
@@ -226,6 +215,98 @@ public class Api {
         } catch (SQLException ex) {
             destroy();
             return "<errorMessage>500</errorMessage>";
+        }
+    }
+    
+    @POST
+    @Path("utenteJSON")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String postUtenteJSON(String content) {
+        init();
+        try {
+            JSONObject obj = new JSONObject(content);
+            Utente utente = new Utente();
+            utente.setUser(obj.getJSONObject("utente").getString("username"));
+            utente.setNome(obj.getJSONObject("utente").getString("nome"));
+            utente.setCognome(obj.getJSONObject("utente").getString("cognome"));
+            utente.setPassword(obj.getJSONObject("utente").getString("password"));
+            utente.setCodFiscale(obj.getJSONObject("utente").getString("codiceFiscale"));
+            utente.setRegione(obj.getJSONObject("utente").getString("regione"));
+            utente.setVia(obj.getJSONObject("utente").getString("via"));
+            utente.setnCivico(obj.getJSONObject("utente").getString("nCivico"));
+            
+            if (!connected) {
+                return "<errorMessage>400</errorMessage>";
+            }
+            String sql = "INSERT INTO utente(username, nome, cognome, password, codiceFiscale, regione, via, nCivico) VALUES('" + utente.getUser() + "', '" + utente.getNome() + "', '" + utente.getCognome() + "', '" + utente.getPassword() + "', '" + utente.getCodFiscale() + "', '" + utente.getRegione() + "', '" + utente.getVia() + "', '" + utente.getnCivico() + "')";
+            Statement statement = spesaDatabase.createStatement();
+
+            if (statement.executeUpdate(sql) <= 0) {
+                statement.close();
+                return "<errorMessage>403</errorMessage>";
+            }
+
+            statement.close();
+            destroy();
+            return "<message>Inserimento avvenuto correttamente</message>";
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Api.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "<errorMessage>400</errorMessage>";
+    }
+    
+    @GET
+    @Path("utenteJSON/{username}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getUtenteJSONDaUsername(@PathParam("username") String user) {
+        init();
+        String output = "";
+        if (!connected) {
+            return "<errorMessage>400</errorMessage>";
+        } else {
+            try {
+                Utente utente = new Utente();
+                String sql = "SELECT idUtente, nome, cognome, codiceFiscale, regione, via, nCivico FROM utente where username ='" + user + "'";
+                System.out.println(user);
+                Statement statement = spesaDatabase.createStatement();
+                ResultSet result = statement.executeQuery(sql);
+
+                result.next();
+                utente.setId(result.getInt(1));
+                utente.setNome(result.getString(2));
+                utente.setCognome(result.getString(3));
+                utente.setCodFiscale(result.getString(4));
+                utente.setRegione(result.getString(5));
+                utente.setVia(result.getString(6));
+                utente.setnCivico(result.getString(7));
+
+                result.close();
+                statement.close();
+
+                if (!utente.getNome().equals(null)) {
+                    output = "{\"utente\":{\n";
+                    output = output + "\"idUtente\":\"" + utente.getId() + "\",\n";
+                    output = output + "\"nome\":\"" + utente.getNome() + "\",\n";
+                    output = output + "\"cognome\":\"" + utente.getCognome() + "\",\n";
+                    output = output + "\"codiceFiscale\":\"" + utente.getCodFiscale()+ "\",\n";
+                    output = output + "\"regione\":\"" + utente.getRegione() + "\",\n";
+                    output = output + "\"via\":\"" + utente.getVia() + "\",\n";
+                    output = output + "\"nCivico\":\"" + utente.getnCivico() + "\"\n";
+                    output = output + "}\n}";
+
+                } else {
+                    destroy();
+                    return "<errorMessage>404</errorMessage>";
+                }
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Api.class.getName()).log(Level.SEVERE, null, ex);
+                destroy();
+                return "<errorMessage>500</errorMessage>";
+            }
+            destroy();
+            return output;
         }
     }
 }
