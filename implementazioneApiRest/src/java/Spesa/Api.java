@@ -105,7 +105,7 @@ public class Api {
                 ResultSet result = statement.executeQuery(sql);
 
                 result.next();
-                utente.setId(result.getInt(1));
+                utente.setId(result.getString(1));
                 utente.setNome(result.getString(2));
                 utente.setCognome(result.getString(3));
                 utente.setCodFiscale(result.getString(4));
@@ -220,7 +220,7 @@ public class Api {
                 ResultSet result = statement.executeQuery(sql);
 
                 result.next();
-                utente.setId(result.getInt(1));
+                utente.setId(result.getString(1));
                 utente.setNome(result.getString(2));
                 utente.setCognome(result.getString(3));
                 utente.setCodFiscale(result.getString(4));

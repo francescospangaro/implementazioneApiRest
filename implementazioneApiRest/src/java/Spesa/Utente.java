@@ -10,7 +10,7 @@ package Spesa;
  * @author franc_000
  */
 public class Utente {
-    private int id;
+    private String id;
     private String user;
     private String nome;
     private String cognome;
@@ -28,7 +28,7 @@ public class Utente {
     private String via;
     private String nCivico;
 
-    public Utente(int id, String user, String nome, String cognome, String codFiscale, String regione, String via, String nCivico) {
+    public Utente(String id, String user, String nome, String cognome, String codFiscale, String regione, String via, String nCivico) {
         this.id = id;
         this.user = user;
         this.nome = nome;
@@ -42,11 +42,11 @@ public class Utente {
     public Utente() {
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
